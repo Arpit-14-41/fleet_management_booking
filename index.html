@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Expense Tracker</title>
+
+    <!-- ===== CSS START ===== -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 360px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .form input, .form select {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        ul {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        li {
+            background: #f1f1f1;
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .delete {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+    <!-- ===== CSS END ===== -->
+
+</head>
+<body>
+
+<div class="container">
+    <h1>💰 Smart Expense Tracker</h1>
+
+    <div class="form">
+        <input type="text" id="title" placeholder="Expense Title">
+        <input type="number" id="amount" placeholder="Amount (₹)">
+        <select id="category">
+            <option value="">Select Category</option>
+            <option>Food</option>
+            <option>Travel</option>
+            <option>Shopping</option>
+            <option>Bills</option>
+            <option>Other</option>
+        </select>
+        <button onclick="addExpense()">Add Expense</button>
+    </div>
+
+    <h2>Total Expense: ₹ <span id="total">0</span></h2>
+
+    <ul id="expense-list"></ul>
+</div>
+
+<!-- ===== JAVASCRIPT START ===== -->
+<script>
+    let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+
+    const list = document.getElementById("expense-list");
+    const totalDisplay = document.getElementById("total");
+
+    function renderExpenses() {
+        list.innerHTML = "";
+        let total = 0;
+
+        expenses.forEach((expense, index) => {
+            total += expense.amount;
+
+            const li = document.createElement("li");
+            li.innerHTML = `
+                ${expense.title} (${expense.category}) - ₹${expense.amount}
+                <span class="delete" onclick="deleteExpense(${index})">X</span>
+            `;
+            list.appendChild(li);
+        });
+
+        totalDisplay.innerText = total;
+        localStorage.setItem("expenses", JSON.stringify(expenses));
+    }
+
+    function addExpense() {
+        const title = document.getElementById("title").value;
+        const amount = document.getElementById("amount").value;
+        const category = document.getElementById("category").value;
+
+        if (title === "" || amount === "" || category === "") {
+            alert("Please fill all fields");
+            return;
+        }
+
+        expenses.push({
+            title: title,
+            amount: Number(amount),
+            category: category
+        });
+
+        document.getElementById("title").value = "";
+        document.getElementById("amount").value = "";
+        document.getElementById("category").value = "";
+
+        renderExpenses();
+    }
+
+    function deleteExpense(index) {
+        expenses.splice(index, 1);
+        renderExpenses();
+    }
+
+    renderExpenses();
+</script>
+<!-- ===== JAVASCRIPT END ===== -->
+
+</body>
+</html>
